@@ -12,8 +12,8 @@ import SceneKit
 
 class Joystick: SKNode {
     
-    let ball = SKSpriteNode(imageNamed: "parteCima")
-    let base = SKSpriteNode(imageNamed: "bola")
+    let ball = SKSpriteNode(imageNamed: "seta.png")
+    let base = SKSpriteNode(imageNamed: "bola.png")
 
     var velocityX: CGFloat = 0.0
     var velocityY: CGFloat = 0.0
@@ -61,8 +61,8 @@ class Joystick: SKNode {
 ////        self.velocityY = (self.ball.position.y - self.base.position.y) / 20
 //
 
-        self.velocityX = (self.ball.position.x - self.base.position.x) / 10
-        self.velocityY = (self.ball.position.y - self.base.position.y) / 10
+        self.velocityX = (self.ball.position.x - self.base.position.x) / 20
+        self.velocityY = (self.ball.position.y - self.base.position.y) / 20
         
         
     }
@@ -111,36 +111,5 @@ class Joystick: SKNode {
         
     }
     
-    
-    func updateMovement(location: CGPoint, ship: SCNNode){
-        //calcular a velocidade do movimento referente a localizacao do toque
-        velocityX = (maxSpeed * location.x) / maxSlide
-        velocityY = (maxSpeed * location.y) / maxSlide
-        
-        
-        if velocityX > maxSpeed {
-            move.x = maxSpeed * -1
-        }else if velocityX < maxSpeed{
-            move.x = maxSpeed * 1
-        }
-        if velocityY > maxSpeed {
-            move.y = maxSpeed * -1
-        }else if velocityY < maxSpeed{
-            move.y = maxSpeed * 1
-        }
-        
-        //atribuir esse movimento ao joystick
-//        velocityX = move.x / 10
-//        velocityY = move.y / 10
-        
-        self.ball.position = CGPoint(x: (location.x ), y: (location.y ))
-        
-        //adicionar na posição da nave o valor do movimento realizado
-//        var posShip = ship.presentation.position
-//        posShip.x += Float(move.x)
-//        posShip.y += Float(move.y)
-//        
-//        ship.position = posShip
-    }
     
 }

@@ -26,8 +26,7 @@ class ButtonDisparo: SKScene {
     }
     
    func createButton(){
-        //        button.size = CGSize(width: 10, height: 10)
-        button = SKSpriteNode(imageNamed: "botaoFogo")
+        button = SKSpriteNode(imageNamed: "botaoFogo.png")
         button.position = CGPoint(x: UIScreen.main.bounds.size.width - 150, y: UIScreen.main.bounds.size.height - 300)
         button.zPosition = 100
         button.setScale(0.03)
@@ -49,7 +48,6 @@ class ButtonDisparo: SKScene {
         let touch = touches.first
         let location = touch?.location(in: self)
         let nodes = self.nodes(at: location!)
-        print("Deu Bom, foi meu chapa!")
         if nodes.first?.name == "btn" {
             buttonPressed = true
         }
