@@ -10,7 +10,7 @@ import Foundation
 import SpriteKit
 import SceneKit
 
-class ButtonDisparo: SKScene {
+public class HUD: SKScene {
     
     var button = SKSpriteNode()
     var buttonPressed = false
@@ -20,14 +20,14 @@ class ButtonDisparo: SKScene {
     
     let joystick = Joystick()
     
-    override func sceneDidLoad() {
+    public override func sceneDidLoad() {
         super.sceneDidLoad()
         self.createButton()
     }
     
-   func createButton(){
-        button = SKSpriteNode(imageNamed: "botaoFogo.png")
-        button.position = CGPoint(x: UIScreen.main.bounds.size.width - 150, y: UIScreen.main.bounds.size.height - 300)
+   public func createButton(){
+        button = SKSpriteNode(imageNamed: "assets/botaoFogo.png")
+        button.position = CGPoint(x: UIScreen.main.bounds.size.width - 150, y: UIScreen.main.bounds.size.height - 800)
         button.zPosition = 100
         button.setScale(0.03)
         button.name = "btn"
@@ -38,13 +38,13 @@ class ButtonDisparo: SKScene {
 
     }
     
-    func removeButton() {
+    public func removeButton() {
         if button.name == "btn" {
             button.removeFromParent()
         }
     }
     
-    func touchTheScreen(touches: Set<UITouch>, with event: UIEvent?)  {
+    public func touchTheScreen(touches: Set<UITouch>, with event: UIEvent?)  {
         let touch = touches.first
         let location = touch?.location(in: self)
         let nodes = self.nodes(at: location!)

@@ -10,8 +10,8 @@ import Foundation
 import SceneKit
 
 
-class Disparo: SCNNode {
-    override init() {
+public class Disparo: SCNNode {
+    public override init() {
         super.init()
         let bullet = SCNSphere(radius:0.25)
         self.geometry = bullet
@@ -21,11 +21,7 @@ class Disparo: SCNNode {
         bullet.name = "bulletEnemy"
         self.physicsBody?.categoryBitMask = CollisionCategory.bulletEnemy.rawValue
         self.physicsBody?.contactTestBitMask = CollisionCategory.ship.rawValue
-//        self.physicsBody?.collisionBitMask = 1
-//        let material = SCNMaterial()
-//        material.diffuse.contents = UIImage(named: <#T##String#>)
-//        self.geometry?.materials = [material]
-        
+
     }
     
     required init?(coder: NSCoder) {

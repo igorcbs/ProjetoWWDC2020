@@ -8,11 +8,12 @@
 import Foundation
 import SceneKit
 import QuartzCore
+import PlaygroundSupport
 
 public class NaveScene: SCNView, SCNPhysicsContactDelegate, SCNSceneRendererDelegate{
 
     //Hud Layer
-    var button = ButtonDisparo(size: UIScreen.main.bounds.size)
+    var button = HUD(size: UIScreen.main.bounds.size)
     var cameraNode = SCNNode()
     
     //Player
@@ -41,9 +42,11 @@ public class NaveScene: SCNView, SCNPhysicsContactDelegate, SCNSceneRendererDele
     var bossApear = true
     
     
-    public override init(frame: CGRect) {
+    override public init(frame: CGRect) {
         super.init(frame: frame, options: [SCNView.Option.preferredRenderingAPI.rawValue: SCNRenderingAPI.metal.rawValue])
-        
+        print(cameraNode)
+        print(button)
+        print(ship)
         //Definindo a scene
         self.scene = SCNScene(named: "Navescene/nave.scn")!
         
@@ -194,15 +197,25 @@ public class NaveScene: SCNView, SCNPhysicsContactDelegate, SCNSceneRendererDele
                         self.removeNodeWithAnimation(contact.nodeA, explosion: true, sceneView: self)
 
                     })
+                    self.button.joystick.isHidden = true
+                    self.button.isHidden = true
+                    let waitAction = SCNAction.wait(duration: 1.0)
+                    let moveAction = SCNAction.move(to: SCNVector3(ship.position.x, ship.position.y, ship.position.z + 200), duration: 5.0)
+                    let sequence = SCNAction.sequence([waitAction,moveAction])
+                    ship.runAction(sequence)
+                    self.overlaySKScene = FinalScene(size: UIScreen.main.bounds.size)
                 }
                 
             }
                 
-        }else if (contact.nodeA.physicsBody?.collisionBitMask == CollisionCategory.ship.rawValue && contact.nodeB.physicsBody?.categoryBitMask == CollisionCategory.bulletEnemy.rawValue) {
+        }else if (contact.nodeA.physicsBody?.categoryBitMask == CollisionCategory.ship.rawValue && contact.nodeB.physicsBody?.categoryBitMask == CollisionCategory.bulletEnemy.rawValue) {
+            let positionNodeA = contact.nodeA.position
+            let positionNodeB = contact.nodeB.position
             
-            actionNave(with: ship)
-            removeNodeWithAnimation(contact.nodeB, explosion: false, sceneView: self)
-            
+           if contact.nodeA.physicsBody?.contactTestBitMask == contact.nodeB.physicsBody?.categoryBitMask && positionNodeA.x == positionNodeB.x {
+                actionNave(with: ship)
+                removeNodeWithAnimation(contact.nodeB, explosion: false, sceneView: self)
+            }
             
         }
                 
@@ -225,12 +238,11 @@ public class NaveScene: SCNView, SCNPhysicsContactDelegate, SCNSceneRendererDele
 
         //Configuração da bala do inimigo
         bulletEnemy.isHidden = true
-        bulletEnemy.position = SCNVector3(enemy.position.x, enemy.position.y, enemy.position.z)
+        bulletEnemy.position = SCNVector3(enemy.position.x, enemy.position.y - 0.2, enemy.position.z)
         //Definindo a movimentação da bala do inimigo
         if !targetHit{
-            for _ in 1...5 {
-                enemy.shoot(inPosition: updateNavePosition, of: bulletEnemy, with: self)
-            }
+
+            enemy.shoot(inPosition: updateNavePosition, of: bulletEnemy, with: self)
             
         }
         self.hitEnemy += 1
@@ -239,14 +251,14 @@ public class NaveScene: SCNView, SCNPhysicsContactDelegate, SCNSceneRendererDele
     /*Essa função recebe dois valores do tipo Float um maior e um menor e através do arc4random e uma conta, retorna
      *um valor para aleatório entre eles
      */
-    func floatBetween(_ first: Float,  and second: Float) -> Float { // random float between upper and lower bound (inclusive)
+    public func floatBetween(_ first: Float,  and second: Float) -> Float { // random float between upper and lower bound (inclusive)
         return (Float(arc4random()) / Float(UInt32.max)) * (first - second) + second
     }
     
     /*
      * Essa funçãp remove o node que sofreu dano ou um node bala, podendo ou não ter alguma animação de explosão
      */
-    func removeNodeWithAnimation(_ node: SCNNode, explosion: Bool, sceneView: SCNView) {
+    public func removeNodeWithAnimation(_ node: SCNNode, explosion: Bool, sceneView: SCNView) {
 
         // Play collision sound for all collisions (bullet-bullet, etc.)
 
@@ -258,12 +270,12 @@ public class NaveScene: SCNView, SCNPhysicsContactDelegate, SCNSceneRendererDele
 
 //            self.playSoundEffect(ofType: .explosion)
 //
-//            let particleSystem = SCNParticleSystem(named: "explode.scnp", inDirectory: nil)!
-//            let systemNode = SCNNode()
-//            systemNode.addParticleSystem(particleSystem!)
-            // place explosion where node is
-//            systemNode.position = node.position
-//            sceneView.scene?.rootNode.addChildNode(systemNode)
+            let particleSystem = SCNParticleSystem(named: "Particle/explode.scnp", inDirectory: nil)!
+            let systemNode = SCNNode()
+            systemNode.addParticleSystem(particleSystem)
+            particleSystem.particleSize = CGFloat(integerLiteral: 2)
+            systemNode.position = node.position
+            sceneView.scene?.rootNode.addChildNode(systemNode)
         }
 
         // remove node
@@ -272,7 +284,7 @@ public class NaveScene: SCNView, SCNPhysicsContactDelegate, SCNSceneRendererDele
     }
     
     
-    func actionNave(with nave: SCNNode) {
+    public func actionNave(with nave: SCNNode) {
         let fadeIn = SCNAction.fadeIn(duration: 2.0)
         let fadeOut = SCNAction.fadeOut(duration: 3.0)
         let sequence = SCNAction.sequence([fadeOut,fadeIn])
@@ -280,7 +292,11 @@ public class NaveScene: SCNView, SCNPhysicsContactDelegate, SCNSceneRendererDele
         nave.runAction(sequence)
     }
     
-    func updatePosition(of bullet: SCNNode,with position: SCNVector3,relative nave: SCNNode) {
+    /*
+        Essa função faz update da posicao da camera em relacao a movimentação da nave em tempo real. Pegando a matrix 4x4 da nave e fazendo calculos do proprio Xcode para
+            incrementar na bala da nave.
+     */
+    public func updatePosition(of bullet: SCNNode,with position: SCNVector3,relative nave: SCNNode) {
         //Getting the matrix 4x4 to the camera.transform
         let nodeTranform = matrix_float4x4(nave.transform)
         
@@ -296,7 +312,7 @@ public class NaveScene: SCNView, SCNPhysicsContactDelegate, SCNSceneRendererDele
         
     }
     
-    func navePhysics() {
+    public func navePhysics() {
         ship.physicsBody?.contactTestBitMask = CollisionCategory.bulletEnemy.rawValue
     }
     

@@ -10,10 +10,10 @@ import Foundation
 import SpriteKit
 import SceneKit
 
-class Joystick: SKNode {
+public class Joystick: SKNode {
     
-    let ball = SKSpriteNode(imageNamed: "seta.png")
-    let base = SKSpriteNode(imageNamed: "bola.png")
+    let ball = SKSpriteNode(imageNamed: "assets/seta.png")
+    let base = SKSpriteNode(imageNamed: "assets/bola.png")
 
     var velocityX: CGFloat = 0.0
     var velocityY: CGFloat = 0.0
@@ -25,15 +25,15 @@ class Joystick: SKNode {
     var move = CGPoint()
     
     
-    override init() {
+    public override init() {
         super.init()
-        base.position = CGPoint(x: UIScreen.main.bounds.size.width - 750, y: UIScreen.main.bounds.height - 300)
+        base.position = CGPoint(x: UIScreen.main.bounds.size.width - 650, y: UIScreen.main.bounds.height - 800)
         base.zPosition = 100
         base.setScale(0.03)
         base.name = "base"
         self.addChild(base)
         
-        ball.position = CGPoint(x: UIScreen.main.bounds.size.width - 750, y: UIScreen.main.bounds.height - 300)
+        ball.position = CGPoint(x: UIScreen.main.bounds.size.width - 650 , y: UIScreen.main.bounds.height - 800)
         ball.zPosition = 101
         ball.setScale(0.03)
         ball.name = "ball"
@@ -44,7 +44,7 @@ class Joystick: SKNode {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func movementJoystick(location: CGPoint) {
+    public func movementJoystick(location: CGPoint) {
         let angle = atan2(location.y - self.base.position.y, location.x - self.base.position.x)
         let distanceForCenter = CGFloat(self.base.frame.size.height/2)
 
@@ -67,11 +67,11 @@ class Joystick: SKNode {
         
     }
     
-    func keepMoving() {
+    public func keepMoving() {
         self.ball.position = CGPoint(x: self.base.position.x, y: self.base.position.y)
     }
     
-    func movementOver() {
+    public func movementOver() {
         let moveBack = SKAction.move(to: CGPoint(x: self.base.position.x, y: self.base.position.y), duration: TimeInterval(floatLiteral: 0.1))
         
         moveBack.timingMode = .linear
@@ -84,7 +84,7 @@ class Joystick: SKNode {
         self.alpha = 1.0
     }
     
-    func updateMovement(ship: SCNNode, canMove: Bool, distance: CGPoint) {
+    public func updateMovement(ship: SCNNode, canMove: Bool, distance: CGPoint) {
 
         velocityX = (maxSpeed * (distance.x)) / maxSlide
         velocityY = (maxSpeed * (-distance.y)) / maxSlide
